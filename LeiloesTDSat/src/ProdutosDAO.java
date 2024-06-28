@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class ProdutosDAO {
-    
+
     Connection conn;
     PreparedStatement prep;
     ResultSet resultset;
     ArrayList<ProdutosDTO> listagem = new ArrayList<>();
     
+    // Método para cadastrar produto
     public void cadastrarProduto(ProdutosDTO produto) {
         conn = new conectaDAO().connectDB();
         String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
@@ -35,6 +36,7 @@ public class ProdutosDAO {
         }
     }
     
+    // Método para listar produtos
     public ArrayList<ProdutosDTO> listarProdutos() {
         conn = new conectaDAO().connectDB();
         String sql = "SELECT * FROM produtos";
@@ -65,5 +67,28 @@ public class ProdutosDAO {
         }
         
         return listagem;
+    }
+    
+    // Novo método para atualizar o status de um produto para "Vendido"
+    public void venderProduto(int produtoId) {
+        conn = new conectaDAO().connectDB();
+        String sql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+        
+        try {
+            prep = conn.prepareStatement(sql);
+            prep.setInt(1, produtoId);
+            
+            prep.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao vender produto: " + e.getMessage());
+        } finally {
+            try {
+                if (prep != null) prep.close();
+                if (conn != null) conn.close();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro ao fechar conexão: " + e.getMessage());
+            }
+        }
     }
 }
